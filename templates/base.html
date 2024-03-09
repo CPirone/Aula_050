@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Flasky{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    {% block head %} {% endblock %}
+</head>
+<body>
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Avaliação contínua: <b>Aula 050</b></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% block page_content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js" integrity="sha512-42PE0rd+wZ2hNXftlM78BSehIGzezNeQuzihiBCvUEB3CVxHvsShF86wBWwQORNxNINlBPuq7rG4WWhNiTVHFg==" crossorigin="anonymous"></script>
+
+<script>
+    moment.locale("en");
+    function flask_moment_render(elem) {
+        const timestamp = moment(elem.dataset.timestamp);
+        const func = elem.dataset.function;
+        const format = elem.dataset.format;
+        const timestamp2 = elem.dataset.timestamp2;
+        const no_suffix = elem.dataset.nosuffix;
+        const units = elem.dataset.units;
+        let args = [];
+        if (format)
+            args.push(format);
+        if (timestamp2)
+            args.push(moment(timestamp2));
+        if (no_suffix)
+            args.push(no_suffix);
+        if (units)
+            args.push(units);
+        elem.textContent = timestamp[func].apply(timestamp, args);
+        elem.classList.remove('flask-moment');
+        elem.style.display = "";
+    }
+    function flask_moment_render_all() {
+        const moments = document.querySelectorAll('.flask-moment');
+        moments.forEach(function(moment) {
+            flask_moment_render(moment);
+            const refresh = moment.dataset.refresh;
+            if (refresh && refresh > 0) {
+                (function(elem, interval) {
+                    setInterval(function() {
+                        flask_moment_render(elem);
+                    }, interval);
+                })(moment, refresh);
+            }
+        })
+    }
+    document.addEventListener("DOMContentLoaded", flask_moment_render_all);
+</script>
+{% endblock %}
+</body>
+</html>
